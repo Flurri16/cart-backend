@@ -37,6 +37,8 @@ export const getMe = async (req,res) => {
     try {
         const user = await User.findById(req.userId)
         if(!user) return res.status(403).json({message: "Eror getme"})
+        const {password, ...userData} = user._doc
+        return res.json({ user: userData})
     } catch(err) {
         console.log(err)
         return res.status(500).json({message: "Error back me"})
