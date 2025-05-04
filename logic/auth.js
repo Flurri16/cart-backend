@@ -3,13 +3,15 @@ import bcryptjs from 'bcryptjs'
 import User from '../models/User.js'
 export const register = async (req, res) => {
     try {
-        const {email, password} = req.body
+        const {email, password, username} = req.body
         const user = await User.findOne({email})
-        if(user) return res.status(400).json({message: "User already exist."})
+        const nick = await User.findOne({username})
+        if(user) return res.status(400).json({message: "Email already exist."})
+        if(nick) return res.status(400).json({message: "Username already exist."})
         const salt = bcryptjs.genSaltSync(8)
         const hash = bcryptjs.hashSync(password, salt)
         const newUser = new User({
-            email, password: hash
+            email, password: hash, username
         })
         await newUser.save()
         const token = jwt.sign({_id: newUser._id}, process.env.JWT_SECRET, {expiresIn: "30d"})

@@ -2,12 +2,14 @@ import express from 'express'
 import mongoose from 'mongoose'
 import cors from 'cors'
 import dotenv from 'dotenv'
-import multer from 'multer'
-import path from 'path'
+import { createCheckoutSession } from './logic/stripe.js'
+
+
 import { getMe, login, register} from './logic/auth.js'
 import {checkAuth} from './logic/checkAutj.js'
 import { upload } from './logic/multerLogic.js' // Путь исправь, где у тебя лежит upload.js
 import { addItem, getAll, getOne, remove } from './logic/item.js'
+import { tgsent } from './logic/telegram.js'
 
 
 
@@ -33,7 +35,9 @@ app.post('/api/add', upload.single('image'), addItem)
 app.get('/api/items/', getAll)
 app.delete('/api/items/delete/:id', remove)
 app.get('/api/items/:id', getOne)
+app.use('/api/telegram', tgsent)
 
+app.post('/api/create-checkout-session', createCheckoutSession)
 async function start() {
   try {
     await mongoose.connect(`mongodb+srv://${DB_USER}:${DB_PASSWORD}@cluster0.u5sgw90.mongodb.net/${DB_NAME}?retryWrites=true&w=majority&appName=Cluster0`);
